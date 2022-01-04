@@ -44,10 +44,14 @@ contendo os seguintes métodos:
 ## Especificações do Projeto:
 
 **1.** A turma deverá ter uma duração de um ano;
+
 **2.** Cada turma poderá ter, ao máximo, 2 docentes por assunto;
+
 **3.** Um docente pode optar por ministrar mais de uma turma, desde que não entre em conflito com
 os dias das semanas de turma já definidas;
+
 **4.** Quando uma turma tiver um docente em determinado assunto, ele automáticamente cobrirá a semana inteira de aula.
+
 **5.** Caso uma turma tenha mais de um docente em determinado assunto, um docente ficará om as quartas, quintas e sextas
 enquanto o outro ficará com as segundas e terças.
 
