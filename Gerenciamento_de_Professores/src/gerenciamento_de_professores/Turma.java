@@ -1,7 +1,9 @@
 package gerenciamento_de_professores;
 
 import javax.swing.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import static gerenciamento_de_professores.Docente.listaDocentes;
@@ -26,7 +28,7 @@ public class Turma extends Validacao{
         this.nomeDaTurma = setNomeDaTurma();
         this.qntdDeAlunos = setQntdDeAlunos();
         setAssuntos();
-        this.inicioDasAulas = setInicioDasAulas();
+        setInicioDasAulas();
         listaTurma.add(this);
     }
 
@@ -99,7 +101,7 @@ public class Turma extends Validacao{
         for(int i =0;i<listaAssuntos.size();i++) {
             assuntosListados += "\n" + (i + 1) + " - " + listaAssuntos.get(i).getNomeAssunto();
         }
-            String mensagemPadrao = "Escolha um dos assuntos abaixo para a turma "+this.getNomeDaTurma()+":\n"+assuntosListados;
+            String mensagemPadrao = "Escolha um dos assuntos abaixo paragti a turma "+this.getNomeDaTurma()+":\n"+assuntosListados;
             while(resposta<=0||resposta>listaAssuntos.size()) {
                 resposta = somenteNumeros(entradaVazia(
                  JOptionPane.showInputDialog(null,mensagemPadrao),
@@ -115,7 +117,7 @@ public class Turma extends Validacao{
         return inicioDasAulas;
     }
 
-    public String setInicioDasAulas() {
+    public void setInicioDasAulas() {
 
         String[] diasDaSemana = {"Segunda","Terça","Quarta","Quinta","Sexta","Sábado","Domingo"};
         int diaDaSemanadaAtual = LocalDateTime.now().getDayOfWeek().getValue();
@@ -125,22 +127,36 @@ public class Turma extends Validacao{
         if(listaDatasFinais.size()!=0){
           fimDasAulas = listaDatasFinais.get(listaDatasFinais.size()-1).plusDays(7);
           proximaSegunda = listaDatasFinais.get(listaDatasFinais.size()-1).plusDays(2);
+          DateTimeFormatter formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          LocalDateTime fimDaTurmaFormatado = LocalDate.parse(fimDaTurma,formatador).atTime(LocalTime.from(LocalDateTime.now()));
 
-        }  else if(diasDaSemana[diaDaSemanadaAtual-1].equals("Segunda")) {
-            proximaSegunda = LocalDateTime.now();
-            this.inicioDasAulas = proximaSegunda.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            fimDasAulas = LocalDateTime.now().plusDays(4);
-            this.fimDaTurma = LocalDateTime.now().plusYears(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+          //Valida cadastro de assunto para além da data final da turma.
+          if(fimDasAulas.compareTo(fimDaTurmaFormatado) > 0){
+                JOptionPane.showMessageDialog(null, "Vocẽ não pode mais " +
+                        "cadastrar assuntos para essa turma,\n pois todas as datas já estão preenchidas.");
+                assuntos.remove(listaTurma.indexOf(this));
+                operacoes();
+          }
+
+
         } else {
-            for(int i = 1; !diasDaSemana[diaDaSemanadaAtual-1].equals("Segunda"); i++) {
-                diaDaSemanadaAtual = LocalDateTime.now().plusDays(i).getDayOfWeek().getValue();
+             if(diasDaSemana[diaDaSemanadaAtual-1].equals("Segunda")) {
+                proximaSegunda = LocalDateTime.now();
+                this.inicioDasAulas = proximaSegunda.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                fimDasAulas = LocalDateTime.now().plusDays(4);
+                this.fimDaTurma = LocalDateTime.now().plusYears(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            } else {
+                for(int i = 1; !diasDaSemana[diaDaSemanadaAtual-1].equals("Segunda"); i++) {
+                    diaDaSemanadaAtual = LocalDateTime.now().plusDays(i).getDayOfWeek().getValue();
 
-                if(diasDaSemana[diaDaSemanadaAtual-1].equals("Segunda")) {
-                    proximaSegunda = LocalDateTime.now().plusDays(i);
-                    this.inicioDasAulas = proximaSegunda.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                    fimDasAulas = LocalDateTime.now().plusDays(i+4);
-                    this.fimDaTurma = LocalDateTime.now().plusDays(i).plusYears(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    if(diasDaSemana[diaDaSemanadaAtual-1].equals("Segunda")) {
+                        proximaSegunda = LocalDateTime.now().plusDays(i);
+                        this.inicioDasAulas = proximaSegunda.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        fimDasAulas = LocalDateTime.now().plusDays(i+4);
+                        this.fimDaTurma = LocalDateTime.now().plusDays(i).plusYears(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    }
                 }
+
             }
         }
         JOptionPane.showMessageDialog(null,
@@ -149,7 +165,6 @@ public class Turma extends Validacao{
 
         listaDatasFinais.add(fimDasAulas);
         listaDatasIniciais.add(proximaSegunda);
-        return this.inicioDasAulas;
     }
 
     public String listarTurma(Turma turma) {
