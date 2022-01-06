@@ -101,7 +101,7 @@ public class Turma extends Validacao{
         for(int i =0;i<listaAssuntos.size();i++) {
             assuntosListados += "\n" + (i + 1) + " - " + listaAssuntos.get(i).getNomeAssunto();
         }
-            String mensagemPadrao = "Escolha um dos assuntos abaixo paragti a turma "+this.getNomeDaTurma()+":\n"+assuntosListados;
+            String mensagemPadrao = "Escolha um dos assuntos abaixo para a turma "+this.getNomeDaTurma()+":\n"+assuntosListados;
             while(resposta<=0||resposta>listaAssuntos.size()) {
                 resposta = somenteNumeros(entradaVazia(
                  JOptionPane.showInputDialog(null,mensagemPadrao),
